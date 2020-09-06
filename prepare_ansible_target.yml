@@ -13,8 +13,8 @@
     - name: Update Packages
       raw: (apt-get update && apt-get -y upgrade)
 
-    - name: Install Python 2
-      raw: test -e /usr/bin/python || (apt-get update && apt-get install -y python)
+    - name: Install Python 3
+      raw: test -e /usr/bin/python3 || (apt-get update && apt-get install python3-minimal -y --no-install-recommends)
 
     - name: Fancy way of doing authorized_keys
       authorized_key: user=root
@@ -38,8 +38,8 @@
       # only run this task block when we've just changed /etc/environment
       when: newenv.changed
 
-    #- name: Create /root/.ssh
-    #  file: path=/root/.ssh state=directory mode=0700
+    - name: Create /root/.ssh
+      file: path=/root/.ssh state=directory mode=0700
 
     #- name: Create /root/.ssh/authorized_keys from our local ssh pubkey
     #  lineinfile: dest=/root/.ssh/authorized_keys line="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
