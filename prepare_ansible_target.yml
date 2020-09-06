@@ -16,6 +16,9 @@
     - name: Install Python 3
       raw: test -e /usr/bin/python3 || (apt-get update && apt-get install python3-minimal -y --no-install-recommends)
 
+    - name: Remove Python 2
+      raw: (apt-get remove -y python-minimal python2 && apt-get autoremove -y)
+
     - name: Fancy way of doing authorized_keys
       authorized_key: user=root
                       exclusive=no
@@ -41,6 +44,6 @@
     - name: Create /root/.ssh
       file: path=/root/.ssh state=directory mode=0700
 
-    #- name: Create /root/.ssh/authorized_keys from our local ssh pubkey
-    #  lineinfile: dest=/root/.ssh/authorized_keys line="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    - name: Create /root/.ssh/authorized_keys from our local ssh pubkey
+      lineinfile: dest=/root/.ssh/authorized_keys line="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
