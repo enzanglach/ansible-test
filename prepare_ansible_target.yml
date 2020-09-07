@@ -14,12 +14,21 @@
       raw: (apt-get update && apt-get -y upgrade)
 
     - name: Install Python 3
-      raw: test -e /usr/bin/python3 || (apt-get update && apt-get install python3-minimal -y --no-install-recommends)
+      command: apt-get update && apt-get install python3-minimal -y --no-install-recommends
+      args:
+        creates: /usr/bin/python3
 
     - name: Remove Python 2
-      raw: (apt-get remove -y python-minimal python2 && apt-get autoremove -y)
+      command: apt-get remove -y python-minimal python2 && apt-get autoremove -y
+      args:
+        removes: /usr/bin/python2
 
-    - name: Fancy way of doing authorized_keys
+    - name: Ubuntu authorized_keys
+      authorized_key: user=ubuntu
+                      exclusive=no
+                      key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    
+    - name: Root authorized_keys
       authorized_key: user=root
                       exclusive=no
                       key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
@@ -40,10 +49,3 @@
         raw: update-locale LANG=en_US.UTF-8
       # only run this task block when we've just changed /etc/environment
       when: newenv.changed
-
-    - name: Create /root/.ssh
-      file: path=/root/.ssh state=directory mode=0700
-
-    - name: Create /root/.ssh/authorized_keys from our local ssh pubkey
-      lineinfile: dest=/root/.ssh/authorized_keys line="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-
