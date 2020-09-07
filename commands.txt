@@ -1,0 +1,3 @@
+ansible-playbook prepare_ansible_target.yml -i hosts -u ubuntu
+
+ansible all -m ping -u root -i hosts
